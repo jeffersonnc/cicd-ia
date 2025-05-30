@@ -13,7 +13,7 @@ jobs:
       - run: vendor/bin/phpstan analyse src/ --error-format=junit > test-results/phpstan.xml || true
       - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > test-results/phpmd.xml || true
       - store_test_results:
-          path: test-results
+          path: /home/circleci/project/test-results/
 
 workflows:
   test:
