@@ -1,0 +1,18 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/php:8.2
+    steps:
+      - checkout
+      - run: composer install
+      - run: vendor/bin/phpunit --coverage-text
+      - run: vendor/bin/phpstan analyse src/
+      - run: vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
