@@ -13,7 +13,7 @@ CICD-IA
 ├── composer.json        # Dependencias del proyecto
 ├── phpunit.xml          # Configuración de PHPUnit
 ├── README.md            # Documentación del proyecto
-└── .circleci/
+└── .circleci
     └── config.yml       # Configuración de CircleCI
 ```
 
@@ -97,7 +97,6 @@ Para activar la integración:
 - El proyecto actualmente tiene 100% de cobertura de pruebas unitarias.
 - Puedes agregar más funciones y pruebas siguiendo la misma estructura.
 - Si quieres automatizar estos análisis, puedes agregarlos como scripts en tu `composer.json`.
-- Si tienes problemas con credenciales de Git en Mac, revisa el llavero (Keychain Access) y asegúrate de usar un token personal de GitHub.
 
 ---
 
