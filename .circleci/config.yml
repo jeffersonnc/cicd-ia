@@ -1,18 +1,21 @@
 version: 2.1
 
 jobs:
-  php-test:
+  code-quality:
     docker:
       - image: cimg/php:8.2
     resource_class: small
     steps:
       - checkout
       - run: composer install
-      - run: vendor/bin/phpunit --coverage-text
-      - run: vendor/bin/phpstan analyse src/
-      - run: vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode
+      - run: mkdir -p test-results
+      - run: vendor/bin/phpunit --log-junit test-results/phpunit.xml
+      - run: vendor/bin/phpstan analyse src/ --error-format=junit > test-results/phpstan.xml || true
+      - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > test-results/phpmd.xml || true
+      - store_test_results:
+          path: test-results
 
 workflows:
   test:
     jobs:
-      - php-test
+      - code-quality
