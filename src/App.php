@@ -6,11 +6,11 @@ class App {
     }
 
     public function add($FirstNumber, $SecondNumber) {
-        return $a + $b;
+        return $FirstNumber + $SecondNumber;
     }
 
     public function subtract($FirstNumber, $SecondNumber) {
-        return $a - $b;
+        return $FirstNumber - $SecondNumber;
     }
     
 }
