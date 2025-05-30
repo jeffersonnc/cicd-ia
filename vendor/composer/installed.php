@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'cicd-ia/php-app',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => 'bbd5d3c46c2ae5f418d7bb7ae363ed129328b55e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'cicd-ia/php-app' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'bbd5d3c46c2ae5f418d7bb7ae363ed129328b55e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
