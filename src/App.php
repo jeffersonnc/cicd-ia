@@ -5,12 +5,12 @@ class App {
         return "Hello, " . $name . "!";
     }
 
-    public function add($FirstNumber, $SecondNumber) {
-        return $FirstNumber + $SecondNumber;
+    public function add($firstNumber, $secondNumber) {
+        return $firstNumber + $secondNumber;
     }
 
-    public function subtract($FirstNumber, $SecondNumber) {
-        return $FirstNumber - $SecondNumber;
+    public function subtract($firstNumber, $secondNumber) {
+        return $firstNumber - $secondNumber;
     }
     
 }
