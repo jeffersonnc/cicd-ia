@@ -1,6 +1,6 @@
 # CICD-IA
 
-Aplicación PHP de ejemplo con pruebas unitarias, cobertura de código y análisis de calidad.
+Aplicación PHP de ejemplo con pruebas unitarias, cobertura de código y análisis de calidad, lista para integración continua con CircleCI.
 
 ## Estructura del proyecto
 
@@ -12,7 +12,9 @@ CICD-IA
 │   └── AppTest.php      # Pruebas unitarias para la clase App
 ├── composer.json        # Dependencias del proyecto
 ├── phpunit.xml          # Configuración de PHPUnit
-└── README.md            # Documentación del proyecto
+├── README.md            # Documentación del proyecto
+└── .circleci/
+    └── config.yml       # Configuración de CircleCI
 ```
 
 ## Instalación
@@ -77,11 +79,25 @@ vendor/bin/psalm --init
 vendor/bin/psalm --taint-analysis > resultado_psalm.txt
 ```
 
+## Integración continua (CI/CD) con CircleCI
+
+El proyecto incluye un archivo de configuración para CircleCI en `.circleci/config.yml` que ejecuta automáticamente:
+- Instalación de dependencias
+- Pruebas unitarias con PHPUnit
+- Análisis estático con PHPStan
+- Análisis de calidad con PHPMD
+
+Para activar la integración:
+1. Sube tu repositorio a GitHub.
+2. Conecta tu repositorio a CircleCI desde [https://circleci.com/](https://circleci.com/).
+3. CircleCI ejecutará los análisis y pruebas en cada push automáticamente.
+
 ## Notas
 
 - El proyecto actualmente tiene 100% de cobertura de pruebas unitarias.
 - Puedes agregar más funciones y pruebas siguiendo la misma estructura.
 - Si quieres automatizar estos análisis, puedes agregarlos como scripts en tu `composer.json`.
+- Si tienes problemas con credenciales de Git en Mac, revisa el llavero (Keychain Access) y asegúrate de usar un token personal de GitHub.
 
 ---
 
