@@ -7,9 +7,20 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - run: vendor/bin/phpunit --log-junit /home/circleci/project/test-results/phpunit.xml
-      - run: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
-      - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
+      - run:
+          name: Crear carpeta para resultados de tests
+          command: mkdir -p /home/circleci/project/test-results
+      - run:
+          name: Ejecutar PHPUnit y generar reporte JUnit
+          command: vendor/bin/phpunit 
+                      --log-junit /home/circleci/project/test-results/phpunit.xml
+                      --coverage-clover /home/circleci/project/test-results/coverage.xml
+      - run:
+          name: Ejecutar PHPStan y exportar a XML JUnit
+          command: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
+      - run:
+          name: Ejecutar PHPMD y exportar a XML
+          command: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
       - store_artifacts:
           path: /home/circleci/project/test-results/
 
