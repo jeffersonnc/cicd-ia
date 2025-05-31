@@ -10,7 +10,7 @@ jobs:
       - run: vendor/bin/phpunit --log-junit /home/circleci/project/test-results/phpunit.xml
       - run: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
       - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
-      - store_test_results:
+      - store_artifacts:
           path: /home/circleci/project/test-results/
 
 workflows:
