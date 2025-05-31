@@ -4,11 +4,12 @@ jobs:
   code-quality:
     docker:
       - image: cimg/php:8.2-browsers
-        environment:
-          XDEBUG_MODE: coverage
     resource_class: small
     steps:
       - checkout
+      - run:
+          name: Instalar dependencias de Composer
+          command: composer install --no-interaction --prefer-dist --optimize-autoloader
       - run:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
