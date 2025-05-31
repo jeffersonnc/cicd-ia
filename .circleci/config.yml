@@ -16,8 +16,6 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
 
-      - run: php -v
-      - run: php -m | grep xdebug
       - run: phpenmod xdebug
       - run: echo "xdebug.mode=coverage" >> /etc/php/8.2/cli/conf.d/20-xdebug.ini
       - run: php -i | grep xdebug
