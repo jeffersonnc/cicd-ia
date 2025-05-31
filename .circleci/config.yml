@@ -15,32 +15,19 @@ jobs:
       - run:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
-
-      - run: pdocker-php-ext-enable xdebug
-      - run: echo "xdebug.mode=coverage" >> /etc/php/8.2/cli/conf.d/20-xdebug.ini
-      - run: php -i | grep xdebug
-      - run: vendor/bin/phpunit --coverage-html coverage --log-junit test-results/phpunit.xml
-
       - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
             export XDEBUG_MODE=coverage
-            vendor/bin/phpunit --coverage-html coverage --log-junit test-results/phpunit.xm    
-      - run: php -v
-      - run: php -m | grep xdebug
-      - run: phpenmod xdebug
-      - run: echo "xdebug.mode=coverage" >> /etc/php/8.2/cli/conf.d/20-xdebug.ini
-      - run: php -i | grep xdebug
-      - run: vendor/bin/phpunit --coverage-html coverage --log-junit test-results/phpunit.xml
-
+            vendor/bin/phpunit --coverage-html coverage --log-junit /home/circleci/project/test-results/phpunit.xml
       - run:
           name: Ejecutar PHPStan y exportar a XML JUnit
           command: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
       - run:
           name: Ejecutar PHPMD y exportar a XML
           command: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
-      - store_artifacts:
-          path: /home/circleci/project/test-results/
+      - store_test_results:
+          path: /home/circleci/project/test-results
 
 workflows:
   test:
