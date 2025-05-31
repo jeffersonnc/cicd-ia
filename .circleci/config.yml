@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Ejecutar PHPMD y exportar a XML
           command: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
-      - store_test_results:
+      - store_artifacts:
           path: /home/circleci/project/test-results
 
 workflows:
