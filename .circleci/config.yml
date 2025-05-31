@@ -7,11 +7,9 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - run: composer install
-      - run: mkdir -p /home/circleci/project/test-results
-      - run: vendor/bin/phpunit --log-junit test-results/phpunit.xml
-      - run: vendor/bin/phpstan analyse src/ --error-format=junit > test-results/phpstan.xml || true
-      - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > test-results/phpmd.xml || true
+      - run: vendor/bin/phpunit --log-junit /home/circleci/project/test-results/phpunit.xml
+      - run: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
+      - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
       - store_test_results:
           path: /home/circleci/project/test-results/
 
