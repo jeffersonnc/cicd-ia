@@ -11,10 +11,12 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
-          name: Ejecutar PHPUnit y generar reporte JUnit
-          command: vendor/bin/phpunit 
-                      --log-junit /home/circleci/project/test-results/phpunit.xml
-                      --coverage-clover /home/circleci/project/test-results/coverage.xml
+          name: Ejecutar PHPUnit con reporte JUnit y cobertura
+          command: |
+            mkdir -p /home/circleci/project/test-results
+            vendor/bin/phpunit \
+              --log-junit /home/circleci/project/test-results/phpunit.xml \
+              --coverage-clover /home/circleci/project/test-results/coverage.xml
       - run:
           name: Ejecutar PHPStan y exportar a XML JUnit
           command: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
