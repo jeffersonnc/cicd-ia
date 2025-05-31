@@ -16,6 +16,9 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
+          name: Ejecutar pruebas con cobertura
+          command: vendor/bin/phpunit --coverage-clover=coverage.xml
+      - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
             export XDEBUG_MODE=coverage
