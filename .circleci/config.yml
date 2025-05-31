@@ -11,6 +11,9 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
+          name: Habilitar Xdebug
+          command: phpenv config-add .circleci/xdebug.ini
+      - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
             mkdir -p /home/circleci/project/test-results
