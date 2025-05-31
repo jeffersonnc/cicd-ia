@@ -16,23 +16,13 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
-          name: Activar Xdebug para cobertura
-          command: |
-            echo 'zend_extension=xdebug.so' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-            export XDEBUG_MODE=coverage
-            - run:
-                name: Ver variables de entorno XDEBUG
-                command: printenv | grep XDEBUG
-      - run:
           name: Verificar si Xdebug está cargado
           command: php -i | grep xdebug
       - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
-            mkdir -p /home/circleci/project/test-results
-            vendor/bin/phpunit \
-              --log-junit /home/circleci/project/test-results/phpunit.xml \
-              --coverage-clover /home/circleci/project/test-results/coverage.xml
+            export XDEBUG_MODE=coverage
+            vendor/bin/phpunit --coverage-html coverage --log-junit test-results/phpunit.xml
       - run:
           name: Ejecutar PHPStan y exportar a XML JUnit
           command: vendor/bin/phpstan analyse src/ --error-format=junit > /home/circleci/project/test-results/phpstan.xml || true
