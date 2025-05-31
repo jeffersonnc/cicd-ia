@@ -13,6 +13,13 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
+          name: Ver variables de entorno XDEBUG
+          command: printenv | grep XDEBUG
+
+      - run:
+          name: Verificar si Xdebug está cargado
+          command: php -i | grep xdebug
+      - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
             mkdir -p /home/circleci/project/test-results
