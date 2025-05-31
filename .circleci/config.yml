@@ -25,6 +25,15 @@ jobs:
           command: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
       - store_artifacts:
           path: /home/circleci/project/test-results/
+      - run:
+          name: Verificar si coverage.xml existe
+          command: |
+            if [ -f /home/circleci/project/test-results/coverage.xml ]; then
+              echo "✅ coverage.xml encontrado"
+              ls -lh /home/circleci/project/test-results/coverage.xml
+            else
+              echo "❌ coverage.xml NO encontrado"
+            fi
 
 workflows:
   test:
