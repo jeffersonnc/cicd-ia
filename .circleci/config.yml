@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - run: composer install
-      - run: mkdir -p test-results
+      - run: mkdir -p /home/circleci/project/test-results
       - run: vendor/bin/phpunit --log-junit test-results/phpunit.xml
       - run: vendor/bin/phpstan analyse src/ --error-format=junit > test-results/phpstan.xml || true
       - run: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > test-results/phpmd.xml || true
