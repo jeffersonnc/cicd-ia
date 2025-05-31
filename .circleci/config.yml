@@ -16,9 +16,6 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       - run:
-          name: Verificar si Xdebug está cargado
-          command: php -i | grep xdebug
-      - run:
           name: Ejecutar PHPUnit con reporte JUnit y cobertura
           command: |
             export XDEBUG_MODE=coverage
@@ -31,15 +28,6 @@ jobs:
           command: vendor/bin/phpmd src/ xml cleancode,codesize,controversial,design,naming,unusedcode > /home/circleci/project/test-results/phpmd.xml || true
       - store_artifacts:
           path: /home/circleci/project/test-results/
-      - run:
-          name: Verificar si coverage.xml existe
-          command: |
-            if [ -f /home/circleci/project/test-results/coverage.xml ]; then
-              echo "✅ coverage.xml encontrado"
-              ls -lh /home/circleci/project/test-results/coverage.xml
-            else
-              echo "❌ coverage.xml NO encontrado"
-            fi
 
 workflows:
   test:
