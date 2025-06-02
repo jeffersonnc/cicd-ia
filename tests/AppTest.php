@@ -1,7 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use App;
 
 class AppTest extends TestCase
 {
@@ -25,7 +24,5 @@ class AppTest extends TestCase
     public function testSubtract()
     {
         $this->assertEquals(1, $this->app->subtract(3, 2));
-    }
-
-    // Add more tests for other methods in the App class
+    }    // Add more tests for other methods in the App class
 }
