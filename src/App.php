@@ -1,6 +1,6 @@
 <?php
 
-class AppTesst {
+class App {
     public function greet($name) {
         return "Hello, " . $name . "!";
     }
