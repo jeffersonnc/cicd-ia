@@ -6,9 +6,7 @@ orbs:
 jobs:
   code-quality:
     docker:
-      - image: cimg/php:8.2-browsers
-    environment:
-      XDEBUG_MODE: coverage
+      - image: cimg/php:8.2-browsers  # Imagen oficial actual
     resource_class: small
     
     steps:
@@ -20,14 +18,16 @@ jobs:
             - composer-v1-{{ checksum "composer.lock" }}
             - composer-v1-
       
-      # Habilitar Xdebug explícitamente
+      # Instalar PCOV (más rápido y moderno que Xdebug para coverage)
       - run:
-          name: Configurar Xdebug para cobertura
+          name: Instalar PCOV para cobertura
           command: |
-            echo "Habilitando Xdebug..."
-            sudo docker-php-ext-enable xdebug
-            echo "xdebug.mode=coverage" | sudo tee -a /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-            php -m | grep xdebug
+            echo "Instalando PCOV..."
+            sudo pecl install pcov
+            sudo docker-php-ext-enable pcov
+            echo "pcov.enabled=1" | sudo tee -a /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
+            echo "Verificando instalación:"
+            php -m | grep pcov
       
       - run:
           name: Instalar dependencias de Composer
@@ -43,17 +43,16 @@ jobs:
           name: Crear carpeta para resultados de tests
           command: mkdir -p /home/circleci/project/test-results
       
-      # Verificar configuración de Xdebug antes de ejecutar tests
+      # Verificar configuración de PCOV antes de ejecutar tests
       - run:
-          name: Verificar configuración Xdebug
+          name: Verificar configuración PCOV
           command: |
-            php -i | grep xdebug.mode
+            php -m | grep pcov
             php --version
       
       - run:
-          name: Ejecutar PHPUnit con cobertura y JUnit
+          name: Ejecutar PHPUnit con cobertura PCOV
           command: |
-            export XDEBUG_MODE=coverage
             vendor/bin/phpunit \
               --coverage-clover=coverage.xml \
               --coverage-html=coverage \
@@ -76,18 +75,9 @@ jobs:
       # Almacenar resultados y artefactos
       - store_test_results:
           path: /home/circleci/project/test-results
-      
-      - store_artifacts:
-          path: /home/circleci/project/test-results
-          destination: test-results
-      
-      - store_artifacts:
-          path: coverage
-          destination: coverage-html
-      
+  
       - store_artifacts:
           path: coverage.xml
-          destination: coverage-xml
 
 workflows:
   test:
