@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-require_once __DIR__ . '/../src/App.php';
+use App;
 
 class AppTest extends TestCase
 {

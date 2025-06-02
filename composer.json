@@ -2,6 +2,7 @@
     "name": "cicd-ia/php-app",
     "description": "A simple PHP application with unit tests and code coverage.",
     "type": "project",
+    "license": "MIT",
     "require": {
         "php": "^7.4 || ^8.0",
         "phpunit/phpunit": "^9.5"
@@ -26,4 +27,5 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true
+
 }
