@@ -1,6 +1,8 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use App\App; // Adjust the namespace according to your project structure
+// Assuming the App class is in the App namespace and located in src/App.php
 
 class AppTest extends TestCase
 {

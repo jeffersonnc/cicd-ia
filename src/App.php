@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class App {
     public function greet($name) {
         return "Hello, " . $name . "!";
