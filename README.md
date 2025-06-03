@@ -7,11 +7,12 @@ Aplicación PHP de ejemplo con pruebas unitarias, cobertura de código y anális
 ```
 CICD-IA
 ├── src
-│   └── App.php          # Clase principal de la aplicación
+│   └── App.php          # Clase principal de la aplicación (namespace App)
 ├── tests
-│   └── AppTest.php      # Pruebas unitarias para la clase App
-├── composer.json        # Dependencias del proyecto
+│   └── AppTest.php      # Pruebas unitarias para la clase App (namespace Tests)
+├── composer.json        # Dependencias del proyecto con autoload PSR-4
 ├── phpunit.xml          # Configuración de PHPUnit
+├── index.php            # Punto de entrada web
 ├── README.md            # Documentación del proyecto
 ├── sonar-project.properties  # Configuración de SonarCloud
 └── .circleci
@@ -20,11 +21,83 @@ CICD-IA
 
 ## Instalación
 
-1. Instala PHP y Composer en tu máquina.
-2. Instala las dependencias del proyecto:
+### Requisitos previos
+
+- PHP 7.4 o superior
+- Composer (gestor de dependencias de PHP)
+
+### Instalar PHP y Composer en macOS
+
+#### Opción 1: Usando Homebrew (recomendado)
+
+```sh
+
+# Instalar PHP
+brew install php
+
+# Instalar Composer
+brew install composer
+```
+
+### Verificar instalación
+
+```sh
+# Verificar PHP
+php --version
+
+# Verificar Composer
+composer --version
+```
+
+### Instalar dependencias del proyecto
+
+Una vez que tengas PHP y Composer instalados:
+
+```sh
+# Clonar el repositorio
+git clone https://github.com/tu-usuario/cicd-ia.git
+cd cicd-ia
+
+# Instalar dependencias
+composer install
+```
+
+## Ejecutar la aplicación en local
+
+### Levantar el servidor web
+
+1. **Inicia el servidor de desarrollo de PHP:**
    ```sh
-   composer install
+   php -S localhost:8000
    ```
+
+2. **Abre tu navegador y visita:**
+   - **Página principal:** [http://localhost:8000](http://localhost:8000)
+   - **Con parámetros personalizados:** [http://localhost:8000/?name=Jeff&a=5&b=3](http://localhost:8000/?name=Jeff&a=5&b=3)
+
+3. **Parámetros disponibles:**
+   - `name`: Nombre para el saludo (ej: `name=Maria`)
+   - `a`: Primer número para operaciones matemáticas
+   - `b`: Segundo número para operaciones matemáticas
+
+### Ejemplo de uso
+
+Cuando visites el servidor web con parámetros:
+
+```
+http://localhost:8000/?name=Maria&a=10&b=5
+```
+
+Verás la salida:
+- **Saludo:** Hello, Maria!
+- **Suma (10 + 5):** 15
+- **Resta (10 - 5):** 5
+
+### Gestión del servidor
+
+- **Parar el servidor:** Presiona `Ctrl + C` en la terminal
+- **Cambios en vivo:** El servidor detecta automáticamente los cambios, solo refresca el navegador
+- **Logs:** El servidor muestra logs de peticiones en la terminal
 
 ## Pruebas unitarias
 
@@ -49,12 +122,6 @@ Abre `coverage/index.html` en tu navegador para ver el reporte.
 
 ## Análisis de código
 
-### Estilo de código (PHP_CodeSniffer)
-```sh
-composer require --dev squizlabs/php_codesniffer
-vendor/bin/phpcs src/ > resultado_phpcs.txt
-```
-
 ### Análisis estático (PHPStan)
 ```sh
 composer require --dev phpstan/phpstan
@@ -71,13 +138,6 @@ vendor/bin/phpcpd src/ > resultado_phpcpd.txt
 ```sh
 composer require --dev phpmd/phpmd
 vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode > resultado_phpmd.txt
-```
-
-### Análisis de seguridad (Psalm)
-```sh
-composer require --dev vimeo/psalm
-vendor/bin/psalm --init
-vendor/bin/psalm --taint-analysis > resultado_psalm.txt
 ```
 
 ## Integración continua (CI/CD) con CircleCI
@@ -143,17 +203,29 @@ El proyecto incluye un archivo de configuración para CircleCI en `.circleci/con
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=tu-usuario_cicd-ia&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=tu-usuario_cicd-ia)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=tu-usuario_cicd-ia&metric=coverage)](https://sonarcloud.io/summary/new_code?id=tu-usuario_cicd-ia)
 
-## Notas
+## Información técnica
 
-- El proyecto actualmente tiene 100% de cobertura de pruebas unitarias
-- Todos los análisis de código pasan satisfactoriamente
-- La integración con CircleCI y SonarCloud proporciona feedback automático en cada cambio
-- Puedes agregar más funciones y pruebas siguiendo la misma estructura
-- Los badges de estado se actualizan automáticamente
+### Arquitectura de la aplicación
 
-### Comandos útiles
+- **Clase principal:** `App\App` en `src/App.php`
+  - `greet($name)`: Retorna saludo personalizado
+  - `add($firstNumber, $secondNumber)`: Suma dos números
+  - `subtract($firstNumber, $secondNumber)`: Resta dos números
+
+- **Tests:** `Tests\AppTest` en `tests/AppTest.php`
+  - 100% de cobertura de código
+  - Tests para todas las funciones públicas
+
+- **Autoload:** PSR-4 configurado en `composer.json`
+  - `App\` → `src/`
+  - `Tests\` → `tests/`
+
+## Comandos útiles
 
 ```sh
+# Levantar servidor web local
+php -S localhost:8000
+
 # Ejecutar todos los análisis localmente
 composer test
 vendor/bin/phpstan analyse src/
@@ -164,8 +236,21 @@ composer dump-autoload
 
 # Actualizar dependencias
 composer update
+
+# Verificar instalación
+php --version
+composer --version
 ```
+
+## Notas
+
+- El proyecto tiene 100% de cobertura de pruebas unitarias
+- Todos los análisis de código pasan satisfactoriamente
+- La integración con CircleCI y SonarCloud proporciona feedback automático en cada cambio
+- Namespaces PSR-4 correctamente configurados
+- Aplicación lista para desarrollo profesional y colaborativo
+- Los badges de estado se actualizan automáticamente
 
 ---
 
-Este proyecto es solo para fines educativos y de demostración de buenas prácticas en CI/CD con PHP.
+Este proyecto es para fines educativos y de demostración de buenas prácticas en CI/CD con PHP.
