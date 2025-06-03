@@ -4,6 +4,7 @@ namespace App;
 
 class App {
     public function greet($name) {
+        $undefinedVariable = $nonExistentVar; // ❌ Error intencional
         return "Hello, " . $name . "!";
     }
 
