@@ -13,14 +13,8 @@ Deprecated: PDepend\Source\Language\PHP\AbstractPHPParser::setNodePositionsAndRe
 
 Deprecated: PDepend\Source\Language\PHP\AbstractPHPParser::throwUnexpectedTokenException(): Implicitly marking parameter $token as nullable is deprecated, the explicit nullable type must be used instead in /Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/vendor/pdepend/pdepend/src/main/php/PDepend/Source/Language/PHP/AbstractPHPParser.php on line 8073
 
-Deprecated: PDepend\Source\AST\AbstractASTType::setTokens(): Implicitly marking parameter $startToken as nullable is deprecated, the explicit nullable type must be used instead in /Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/vendor/pdepend/pdepend/src/main/php/PDepend/Source/AST/AbstractASTType.php on line 401
-
 Deprecated: PDepend\Source\AST\ASTMethod::setParent(): Implicitly marking parameter $parent as nullable is deprecated, the explicit nullable type must be used instead in /Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/vendor/pdepend/pdepend/src/main/php/PDepend/Source/AST/ASTMethod.php on line 196
 
 Deprecated: PDepend\Source\AST\ASTArtifactList\CollectionArtifactFilter::setFilter(): Implicitly marking parameter $filter as nullable is deprecated, the explicit nullable type must be used instead in /Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/vendor/pdepend/pdepend/src/main/php/PDepend/Source/AST/ASTArtifactList/CollectionArtifactFilter.php on line 103
 
 Deprecated: PDepend\Metrics\Analyzer\CouplingAnalyzer::calculateCoupling(): Implicitly marking parameter $coupledType as nullable is deprecated, the explicit nullable type must be used instead in /Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/vendor/pdepend/pdepend/src/main/php/PDepend/Metrics/Analyzer/CouplingAnalyzer.php on line 378
-/Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/src/App.php:8   ShortVariable  Avoid variables with short names like $a. Configured minimum length is 3.
-/Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/src/App.php:8   ShortVariable  Avoid variables with short names like $b. Configured minimum length is 3.
-/Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/src/App.php:12  ShortVariable  Avoid variables with short names like $a. Configured minimum length is 3.
-/Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/src/App.php:12  ShortVariable  Avoid variables with short names like $b. Configured minimum length is 3.
