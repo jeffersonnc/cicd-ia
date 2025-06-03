@@ -16,7 +16,7 @@ CICD-IA
 ├── README.md            # Documentación del proyecto
 ├── sonar-project.properties  # Configuración de SonarCloud
 └── .circleci
-    └── config.yml       # Configuración de CircleCI
+    └── config.yml       # Configuración de CircleCI con GitFlow
 ```
 
 ## Instalación
@@ -25,20 +25,22 @@ CICD-IA
 
 - PHP 7.4 o superior
 - Composer (gestor de dependencias de PHP)
+- Git y Git Flow
 
-### Instalar PHP y Composer en macOS
+### Instalar PHP, Composer y Git Flow en macOS
 
-#### Opción 1: Usando Homebrew (recomendado)
+#### Usando Homebrew (recomendado)
 
-```sh
 
 # Instalar PHP
 brew install php
 
 # Instalar Composer
 brew install composer
-```
 
+# Instalar Git Flow
+brew install git-flow
+```
 ### Verificar instalación
 
 ```sh
@@ -47,11 +49,12 @@ php --version
 
 # Verificar Composer
 composer --version
+
+# Verificar Git Flow
+git flow version
 ```
 
-### Instalar dependencias del proyecto
-
-Una vez que tengas PHP y Composer instalados:
+### Clonar y configurar el proyecto
 
 ```sh
 # Clonar el repositorio
@@ -60,6 +63,16 @@ cd cicd-ia
 
 # Instalar dependencias
 composer install
+
+# Inicializar GitFlow (si es tu primera vez)
+git flow init
+# Usar configuración por defecto:
+# - main (producción)
+# - develop (desarrollo)
+# - feature/ (funcionalidades)
+# - release/ (releases)
+# - hotfix/ (correcciones urgentes)
+# - Version tag prefix: v
 ```
 
 ## Ejecutar la aplicación en local
@@ -99,6 +112,73 @@ Verás la salida:
 - **Cambios en vivo:** El servidor detecta automáticamente los cambios, solo refresca el navegador
 - **Logs:** El servidor muestra logs de peticiones en la terminal
 
+## Desarrollo con GitFlow
+
+### Flujo de trabajo
+
+Este proyecto usa **GitFlow** para organizar el desarrollo:
+
+- **`main`** - Código en producción (releases estables)
+- **`develop`** - Rama de desarrollo (integración continua)
+- **`feature/*`** - Nuevas funcionalidades
+- **`release/*`** - Preparación de nuevas versiones
+- **`hotfix/*`** - Correcciones urgentes en producción
+
+### Desarrollar nueva funcionalidad
+
+```sh
+# 1. Crear nueva feature desde develop
+git flow feature start nueva-funcionalidad
+
+# 2. Desarrollar (hacer commits normalmente)
+git add .
+git commit -m "feat: agregar nueva funcionalidad"
+
+# 3. Finalizar feature (merge automático a develop)
+git flow feature finish nueva-funcionalidad
+
+# 4. Subir develop actualizado
+git push origin develop
+```
+
+### Crear un release
+
+```sh
+# 1. Crear rama de release desde develop
+git flow release start v1.0.0
+
+# 2. Hacer ajustes finales (actualizar versión, documentación, etc.)
+git add .
+git commit -m "chore: preparar release v1.0.0"
+
+# 3. Finalizar release (merge a main y develop, crear tag v1.0.0)
+git flow release finish v1.0.0
+
+# 4. Subir cambios y tags
+git push origin main
+git push origin develop
+git push --tags
+```
+
+### Hotfix urgente
+
+```sh
+# 1. Crear hotfix desde main
+git flow hotfix start v1.0.1
+
+# 2. Hacer la corrección urgente
+git add .
+git commit -m "fix: corregir bug crítico en producción"
+
+# 3. Finalizar hotfix (merge a main y develop, crear tag v1.0.1)
+git flow hotfix finish v1.0.1
+
+# 4. Subir cambios y tags
+git push origin main
+git push origin develop
+git push --tags
+```
+
 ## Pruebas unitarias
 
 Ejecuta las pruebas con:
@@ -110,7 +190,7 @@ o directamente:
 vendor/bin/phpunit
 ```
 
-## Cobertura de código
+## Cobertura de código local
 
 Genera el reporte de cobertura con:
 ```sh
@@ -118,36 +198,74 @@ vendor/bin/phpunit --coverage-html coverage
 ```
 Abre `coverage/index.html` en tu navegador para ver el reporte.
 
-> **Nota:** Asegúrate de tener instalado y habilitado Xdebug o PCOV para la cobertura de código.
-
-## Análisis de código
-
-### Análisis estático (PHPStan)
+También puedes generar cobertura en formato XML para SonarCloud:
 ```sh
-composer require --dev phpstan/phpstan
-vendor/bin/phpstan analyse src/ > resultado_phpstan.txt
+vendor/bin/phpunit --coverage-clover=coverage.xml
 ```
 
-### Detección de código duplicado (PHPCPD)
+> **Nota:** Asegúrate de tener instalado y habilitado Xdebug para la cobertura de código.
+
+## Análisis de código local
+
+### Herramientas incluidas en el proyecto
+
+Las siguientes herramientas ya están configuradas en `composer.json` y puedes ejecutarlas localmente:
+
+#### Análisis estático (PHPStan)
 ```sh
-composer require --dev sebastian/phpcpd
-vendor/bin/phpcpd src/ > resultado_phpcpd.txt
+# Analizar código estáticamente
+vendor/bin/phpstan analyse src/
 ```
 
-### Calidad y complejidad (PHPMD)
+#### Análisis de calidad y complejidad (PHPMD)
 ```sh
-composer require --dev phpmd/phpmd
-vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode > resultado_phpmd.txt
+# Detectar code smells y problemas de diseño
+vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode
+```
+
+### Ejecutar todos los análisis localmente
+
+```sh
+# Ejecutar en secuencia (como en CI)
+composer test
+vendor/bin/phpstan analyse src/
+vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode
 ```
 
 ## Integración continua (CI/CD) con CircleCI
 
+Una vez que has probado todo localmente, tu código se analiza automáticamente en cada push.
+
 El proyecto incluye un archivo de configuración para CircleCI en `.circleci/config.yml` que ejecuta automáticamente:
-- Validación de dependencias y sintaxis
-- Pruebas unitarias con PHPUnit y cobertura de código
-- Análisis estático con PHPStan
-- Análisis de calidad con PHPMD
-- Integración con SonarCloud para análisis de código
+- ✅ Validación de dependencias y sintaxis
+- ✅ Pruebas unitarias con PHPUnit y cobertura de código  
+- ✅ Análisis estático con PHPStan
+- ✅ Análisis de calidad con PHPMD
+- ✅ Integración con SonarCloud para análisis de código
+
+### Pipeline automático con GitFlow
+
+**El pipeline se ejecuta de manera diferente según la rama:**
+
+#### Development Pipeline (develop y feature/*)
+- Análisis básico de calidad
+- Pruebas unitarias
+- Feedback rápido para desarrollo
+
+#### Production Pipeline (main)
+- Análisis completo con SonarCloud
+- Validación exhaustiva
+- Reporte a herramientas de calidad
+
+#### Release Pipeline (release/*)
+- Validación completa antes del release
+- Análisis de calidad y seguridad
+- Preparación para producción
+
+#### Hotfix Pipeline (hotfix/*)
+- Validación rápida pero completa
+- Análisis de impacto
+- Deploy rápido a producción
 
 ### Configuración de CircleCI
 
@@ -160,8 +278,9 @@ El proyecto incluye un archivo de configuración para CircleCI en `.circleci/con
      - `SONAR_TOKEN`: Token de acceso a SonarCloud
 
 3. **Pipeline automático:**
-   - Cada push ejecutará automáticamente todos los análisis
-   - Los resultados estarán disponibles en ambas plataformas
+   - Cada push ejecutará automáticamente todos los análisis según la rama
+   - Los resultados estarán disponibles en CircleCI y SonarCloud
+   - Si algún análisis falla, el pipeline se detiene
 
 ## Análisis de código con SonarCloud
 
@@ -188,7 +307,7 @@ El proyecto incluye un archivo de configuración para CircleCI en `.circleci/con
 
 ### Análisis automático
 
-- **En cada push:** CircleCI ejecuta SonarCloud automáticamente
+- **En cada push a main/release:** CircleCI ejecuta SonarCloud automáticamente
 - **Reportes disponibles en:** [https://sonarcloud.io/projects](https://sonarcloud.io/projects)
 - **Métricas incluidas:**
   - Cobertura de código
@@ -220,37 +339,47 @@ El proyecto incluye un archivo de configuración para CircleCI en `.circleci/con
   - `App\` → `src/`
   - `Tests\` → `tests/`
 
+### Versionado
+
+Este proyecto usa **Semantic Versioning** (SemVer):
+- **v1.0.0** - Versión mayor (breaking changes)
+- **v1.1.0** - Versión menor (nuevas funcionalidades)
+- **v1.0.1** - Patch (correcciones de bugs)
+
 ## Comandos útiles
 
 ```sh
-# Levantar servidor web local
-php -S localhost:8000
+# Desarrollo local
+php -S localhost:8000                    # Levantar servidor web
+composer test                           # Ejecutar pruebas
+vendor/bin/phpstan analyse src/          # Análisis estático
+vendor/bin/phpmd src/ text cleancode,... # Análisis de calidad
 
-# Ejecutar todos los análisis localmente
-composer test
-vendor/bin/phpstan analyse src/
-vendor/bin/phpmd src/ text cleancode,codesize,controversial,design,naming,unusedcode
+# GitFlow
+git flow feature start nueva-feature    # Nueva funcionalidad
+git flow feature finish nueva-feature   # Finalizar funcionalidad
+git flow release start v1.0.0          # Nuevo release
+git flow release finish v1.0.0         # Finalizar release
+git flow hotfix start v1.0.1           # Hotfix urgente
+git flow hotfix finish v1.0.1          # Finalizar hotfix
 
-# Regenerar autoloader
-composer dump-autoload
-
-# Actualizar dependencias
-composer update
-
-# Verificar instalación
-php --version
-composer --version
+# Mantenimiento
+composer dump-autoload                  # Regenerar autoloader
+composer update                        # Actualizar dependencias
+php --version                          # Verificar PHP
+composer --version                     # Verificar Composer
+git flow version                       # Verificar Git Flow
 ```
 
 ## Notas
 
 - El proyecto tiene 100% de cobertura de pruebas unitarias
 - Todos los análisis de código pasan satisfactoriamente
+- **GitFlow** organiza el desarrollo con ramas específicas para cada propósito
+- **Pipeline diferenciado** según el tipo de rama (develop/feature/release/hotfix/main)
 - La integración con CircleCI y SonarCloud proporciona feedback automático en cada cambio
 - Namespaces PSR-4 correctamente configurados
+- **Versionado semántico** con tags automáticos (v1.0.0, v1.1.0, etc.)
 - Aplicación lista para desarrollo profesional y colaborativo
 - Los badges de estado se actualizan automáticamente
 
----
-
-Este proyecto es para fines educativos y de demostración de buenas prácticas en CI/CD con PHP.

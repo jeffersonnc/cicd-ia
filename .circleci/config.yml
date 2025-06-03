@@ -153,6 +153,20 @@ workflows:
       - code_quality:
           requires:
             - test
+
+workflows:
+  # wrkflow para desarrolo (develop y feature branches)
+  development_pipeline:
+    when:
+      or:
+        - equal: [ develop, << pipeline.git.branch >> ]
+        - matches: {pattern: "feature/*", value: << pipeline.git.branch >> }
+    jobs:
+      - build_validation
+      - test
+      - code_quality:
+          requires:
+            - test
   
   # Workflow para main branch - más estricto
   main_branch:
@@ -165,3 +179,26 @@ workflows:
           requires:
             - test
           context: sonarcloud-context  # Variables seguras para main
+
+  # Workflow para release
+  release_pipeline:
+    when:
+      matches: {pattern}
+    jobs:
+      - build_validation
+      - test
+      - code_quality:
+          requires:
+            - test
+            - code_quality
+
+# Workflow para hotfixes
+  hotfix_pipeline:
+    when:
+      matches: {pattern: "hotfix/*", value: << pipeline.git.branch >> }
+    jobs:
+      - build_validation
+      - test
+      - code_quality:
+          requires:
+            - test
