@@ -36,9 +36,14 @@ jobs:
           command: mkdir -p test-results
       
       - run:
+          name: Instalar y configurar Xdebug
+          command: |
+            sudo docker-php-ext-install pcov
+      
+      - run:
           name: Ejecutar tests unitarios
           command: |
-            vendor/bin/phpunit \
+            XDEBUG_MODE=coverage vendor/bin/phpunit \
               --coverage-clover=coverage.xml \
               --coverage-html=coverage \
               --log-junit=test-results/phpunit.xml \
