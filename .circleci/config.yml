@@ -141,15 +141,39 @@ jobs:
           name: Verificar autoloader
           command: composer dump-autoload --optimize --strict-psr
 
+  docker_build_and_push:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 20.10.18
+          docker_layer_caching: true
+      
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1 .
+            docker tag $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1 $CIRCLE_PROJECT_USERNAME/cicd-ia:latest
+      
+      - run:
+          name: Push to Docker Hub
+          command: |
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            docker push $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1
+            docker push $CIRCLE_PROJECT_USERNAME/cicd-ia:latest
+
 workflows:
-  # Workflow principal - ejecuta en paralelo lo que puede
-  quality_pipeline:
+  # Workflow para desarrollo (develop y feature branches)
+  development_pipeline:
+    when:
+      or:
+        - equal: [ develop, << pipeline.git.branch >> ]
+        - matches: {pattern: "^feature/.*", value: << pipeline.git.branch >> }
     jobs:
-      # Jobs en paralelo para rapidez
       - build_validation
       - test
-      
-      # Job que depende de tests (para tener coverage)
       - code_quality:
           requires:
             - test
@@ -165,3 +189,30 @@ workflows:
           requires:
             - test
           context: sonarcloud-context  # Variables seguras para main
+      - docker_build_and_push:
+          requires:
+            - test
+            - code_quality
+          context: docker-hub-context  # Variables de Docker Hub
+
+  # Workflow para release
+  release_pipeline:
+    when:
+      matches: {pattern: "^release/.*", value: << pipeline.git.branch >> }
+    jobs:
+      - build_validation
+      - test
+      - code_quality:
+          requires:
+            - test
+
+  # Workflow para hotfixes
+  hotfix_pipeline:
+    when:
+      matches: {pattern: "^hotfix/.*", value: << pipeline.git.branch >> }
+    jobs:
+      - build_validation
+      - test
+      - code_quality:
+          requires:
+            - test

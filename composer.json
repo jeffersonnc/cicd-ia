@@ -23,7 +23,10 @@
         "sebastian/phpcpd": "^6.0"
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "docker:build": "docker build -t cicd-ia .",
+        "docker:run": "docker run -p 8080:80 cicd-ia",
+        "docker:push": "docker push tu-usuario/cicd-ia:latest"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - PHP_ENV=development
+    container_name: cicd-ia-app
+  
+  # Opcional: agregar base de datos para futuras funcionalidades
+  # db:
+  #   image: mysql:8.0
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: cicd_ia
+  #   ports:
+  #     - "3306:3306"
