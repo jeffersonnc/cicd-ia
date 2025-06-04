@@ -11,8 +11,6 @@ commands:
       - run:
           name: Instalar PCOV para cobertura
           command: |
-            sudo pecl install pcov
-            sudo docker-php-ext-enable pcov
             echo "pcov.enabled=1" | sudo tee -a /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
             php -m | grep pcov
 
@@ -153,15 +151,15 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build -t $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1 .
-            docker tag $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1 $CIRCLE_PROJECT_USERNAME/cicd-ia:latest
+            docker build -t jeffnacato/cicd-ia:$CIRCLE_SHA1 .
+            docker tag jeffnacato/cicd-ia:$CIRCLE_SHA1 jeffnacato/cicd-ia:latest
       
       - run:
           name: Push to Docker Hub
           command: |
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-            docker push $CIRCLE_PROJECT_USERNAME/cicd-ia:$CIRCLE_SHA1
-            docker push $CIRCLE_PROJECT_USERNAME/cicd-ia:latest
+            docker push jeffnacato/cicd-ia:$CIRCLE_SHA1
+            docker push jeffnacato/cicd-ia:latest
 
 workflows:
   development_pipeline:
@@ -202,7 +200,6 @@ workflows:
       - code_quality:
           requires:
             - test
-          context: sonarcloud-context  # Variables seguras para main
           filters:
             branches:
               only:
@@ -211,7 +208,6 @@ workflows:
           requires:
             - test
             - code_quality
-          context: docker-hub-context  # Variables de Docker Hub
           filters:
             branches:
               only:
