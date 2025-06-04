@@ -539,4 +539,5 @@ docker pull tu-usuario/cicd-ia:latest  # Actualizar imagen
 5. **Main** → Docker build + push automático
 6. **Producción** → `docker run` desde Docker Hub
 
+hola
 ---
