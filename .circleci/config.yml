@@ -45,6 +45,15 @@ jobs:
               --coverage-text
       
       - run:
+          name: Corregir rutas en coverage.xml para SonarCloud
+          command: |
+            if [ -f coverage.xml ]; then
+              sed -i "s|$(pwd)/||g" coverage.xml
+              echo "=== Coverage.xml corregido ==="
+              head -10 coverage.xml
+            fi
+      
+      - run:
           name: Verificar archivos generados
           command: |
             echo "=== Archivos en directorio actual ==="
