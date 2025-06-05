@@ -70,7 +70,30 @@ jobs:
       # Recuperar artifacts del job anterior
       - attach_workspace:
           at: .
-      
+      - run:
+          name: 🔍 DEBUG DEFINITIVO - Coverage XML
+          command: |
+            echo "=== 1. REGENERAR AUTOLOAD ==="
+            composer dump-autoload -v
+            
+            echo -e "\n=== 2. EJECUTAR PHPUNIT CON COVERAGE VISIBLE ==="
+            vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
+            
+            echo -e "\n=== 3. MOSTRAR COVERAGE.XML COMPLETO ==="
+            echo "--- INICIO coverage.xml ---"
+            cat coverage.xml
+            echo "--- FIN coverage.xml ---"
+            
+            echo -e "\n=== 4. VERIFICAR TAMAÑO Y FORMATO ==="
+            ls -la coverage.xml
+            file coverage.xml
+            
+            echo -e "\n=== 5. BUSCAR MENCIONES DE src/ ==="
+            grep -n "src\|App\.php" coverage.xml || echo "❌ No se encontró referencia a src/ o App.php"
+            
+            echo -e "\n=== 6. VERIFICAR SI HAY MÉTRICAS ==="
+            grep -n "lines\|statements\|methods" coverage.xml || echo "❌ No hay métricas de cobertura"
+
       - run:
           name: Verificar archivos de coverage
           command: |
