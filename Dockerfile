@@ -2,7 +2,7 @@
 FROM php:8.2-apache
 
 # Información del mantenedor
-LABEL maintainer="tu-email@example.com"
+LABEL maintainer="jeffnacato"
 LABEL description="CICD-IA - Aplicación PHP de ejemplo con CI/CD"
 LABEL version="1.0.0"
 

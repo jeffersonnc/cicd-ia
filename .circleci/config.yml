@@ -3,117 +3,63 @@ version: 2.1
 orbs:
   sonarcloud: sonarsource/sonarcloud@3.0.0
 
-# Comandos reutilizables para DRY principle
-commands:
-  install_dependencies:
-    description: "Instala dependencias con cache optimizado"
-    steps:
-      - restore_cache:
-          keys:
-            - composer-v2-{{ checksum "composer.lock" }}
-            - composer-v2-
-
-      - run:
-          name: Instalar Xdebug para coverage
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y php-xdebug
-            sudo phpenmod xdebug
-            echo "zend_extension=xdebug.so" | sudo tee -a /etc/php/8.1/mods-available/xdebug.ini
-            echo "xdebug.mode=coverage" | sudo tee -a /etc/php/8.1/mods-available/xdebug.ini
-            sudo ln -sf /etc/php/8.1/mods-available/xdebug.ini /etc/php/8.1/cli/conf.d/20-xdebug.ini
-            php -i | grep -i xdebug || echo "verificado configuración de Xdebug"
-
-            echo "✅ Configuración de Xdebug completada"
-      - run:
-          name: Instalar dependencias de Composer
-          command: |
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-      - save_cache:
-          key: composer-v2-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
-
 jobs:
   # Job separado para tests - principio de responsabilidad única
   test:
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
+    working_directory: ~/cicd-ia
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
-      
-      - run:
-          name: Crear directorios necesarios
-          command: |
-            mkdir -p test-results
-      - run:
-          name: Ejecutar tests con PHPUnit
-          command: |
-            vendor/bin/phpunit \
-              --configuration phpunit.xml \
-              --log-junit test-results/phpunit.xml \
-              --coverage-clover coverage.xml \
-              --coverage-html coverage
 
-      # Guardar resultados para jobs posteriores
+      - run:
+          name: Instalar dependencias PHP
+          command: |
+            composer install
+      - run:
+          name: ejecutar tests con coverage usando PHPDBG
+          command: |
+            phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml
+          environment:
+              XDEBUG_MODE: coverage
+      - run:
+          name: Verificar coverage generado
+          command: |
+            if [ -f coverage.xml ]; then
+              echo "✅ coverage.xml generado correctamente"
+            else
+              echo "❌ coverage.xml no encontrado"
+            fi
+      # Guardar resultados para el job code_quality
       - persist_to_workspace:
           root: .
           paths:
             - coverage.xml
-            - coverage
-            - test-results
-      
-      - store_test_results:
-          path: test-results
-      
-      - store_artifacts:
-          path: coverage
-          destination: coverage-report
       
   # Job separado para análisis de código
   code_quality:
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
-      # Recuperar artifacts del job anterior
+
+      - run:
+          name: Instalar dependencias PHP
+          command: composer install
+
+  # Recuperar coverage.xml del job anterior 
       - attach_workspace:
           at: .
       - run:
-          name: 🔍 DEBUG DEFINITIVO - Coverage XML
+          name: Verificar coverage generado
           command: |
-            echo "=== 1. REGENERAR AUTOLOAD ==="
-            composer dump-autoload -v
-            
-            echo -e "\n=== 2. EJECUTAR PHPUNIT CON COVERAGE VISIBLE ==="
-            vendor/bin/phpunit --coverage-text --coverage-clover coverage.xml
-            
-            echo -e "\n=== 3. MOSTRAR COVERAGE.XML COMPLETO ==="
-            echo "--- INICIO coverage.xml ---"
-            cat coverage.xml
-            echo "--- FIN coverage.xml ---"
-            
-            echo -e "\n=== 4. VERIFICAR TAMAÑO Y FORMATO ==="
-            ls -la coverage.xml
-            file coverage.xml
-            
-            echo -e "\n=== 5. BUSCAR MENCIONES DE src/ ==="
-            grep -n "src\|App\.php" coverage.xml || echo "❌ No se encontró referencia a src/ o App.php"
-            
-            echo -e "\n=== 6. VERIFICAR SI HAY MÉTRICAS ==="
-            grep -n "lines\|statements\|methods" coverage.xml || echo "❌ No hay métricas de cobertura"
-
-      - run:
-          name: Verificar archivos de coverage
-          command: |
-            echo "Verificando archivos necesarios para SonarCloud..."
-            ls -la coverage.xml || echo "❌ coverage.xml no encontrado"
-            ls -la test-results/phpunit.xml || echo "❌ phpunit.xml no encontrado"
-            ls -la coverage/ || echo "❌ carpeta coverage no encontrada"
+            if [ -f coverage.xml ]; then
+              echo "✅ coverage.xml encontrado"
+            else
+              echo "❌ coverage.xml no encontrado"
+            fi
 
       - run:
           name: Análisis estático con PHPStan
@@ -133,24 +79,20 @@ jobs:
       # Análisis con SonarCloud
       - sonarcloud/scan:
           cache_version: 2
-      
-      # Solo guardar artifacts si hay errores (debugging)
-      - store_artifacts:
-          path: phpstan-report.xml
-          destination: quality-reports/phpstan.xml
-      - store_artifacts:
-          path: phpmd-report.xml  
-          destination: quality-reports/phpmd.xml
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
       
+      - run:
+          name: Instalar dependencias PHP
+          command: |
+            composer install
+
       - run:
           name: Validar sintaxis PHP
           command: find src/ -name "*.php" -exec php -l {} \;
