@@ -36,8 +36,17 @@ jobs:
           command: mkdir -p test-results
       
       - run:
+          name: Verificar extensiones PHP disponibles
+          command: |
+            echo "=== Extensiones PHP disponibles ==="
+            php -m | grep -E "(xdebug|pcov)" || echo "❌ Sin extensión de coverage"
+            echo "=== Configuración PHP ==="
+            php -i | grep -E "(xdebug|pcov)" | head -3 || echo "❌ Sin configuración de coverage"
+      
+      - run:
           name: Ejecutar tests unitarios
           command: |
+            echo "=== Ejecutando PHPUnit ==="
             vendor/bin/phpunit \
               --coverage-clover=coverage.xml \
               --coverage-html=coverage \
