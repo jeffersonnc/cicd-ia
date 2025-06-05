@@ -35,45 +35,6 @@ jobs:
           name: Crear directorios necesarios
           command: mkdir -p test-results
       
-      - run:
-          name: Verificar extensiones PHP disponibles
-          command: |
-            echo "=== Extensiones PHP disponibles ==="
-            php -m | grep -E "(xdebug|pcov)" || echo "❌ Sin extensión de coverage"
-            echo "=== Configuración PHP ==="
-            php -i | grep -E "(xdebug|pcov)" | head -3 || echo "❌ Sin configuración de coverage"
-      
-      - run:
-          name: Ejecutar tests unitarios
-          command: |
-            echo "=== Ejecutando PHPUnit ==="
-            vendor/bin/phpunit \
-              --coverage-clover=coverage.xml \
-              --coverage-html=coverage \
-              --log-junit=test-results/phpunit.xml \
-              --coverage-text
-      
-      - run:
-          name: Corregir rutas en coverage.xml para SonarCloud
-          command: |
-            if [ -f coverage.xml ]; then
-              sed -i "s|$(pwd)/||g" coverage.xml
-              echo "=== Coverage.xml corregido ==="
-              head -10 coverage.xml
-            fi
-      
-      - run:
-          name: Verificar archivos generados
-          command: |
-            echo "=== Archivos en directorio actual ==="
-            ls -la
-            echo "=== Contenido de coverage.xml ==="
-            if [ -f coverage.xml ]; then
-              head -20 coverage.xml
-            else
-              echo "coverage.xml NO existe"
-            fi
-      
       # Guardar resultados para jobs posteriores
       - persist_to_workspace:
           root: .
