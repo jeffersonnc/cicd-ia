@@ -18,9 +18,10 @@ commands:
           command: |
             sudo apt-get update
             sudo apt-get install -y php-xdebug
-            echo "zend_extension=xdebug.so" | sudo tee -a /etc/php/8.1/cli/php.ini
+            sudo phpenmod xdebug
+            echo "Configurando Xdebug para cobertura de código..."
             echo "xdebug.mode=coverage" | sudo tee -a /etc/php/8.1/cli/php.ini
-            php -m | grep -q xdebug
+            php -m | grep -q xdebug && echo " ✅ Xdebug instalado correctamente"
       - run:
           name: Instalar dependencias de Composer
           command: |
