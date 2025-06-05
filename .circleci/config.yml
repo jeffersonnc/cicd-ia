@@ -12,6 +12,14 @@ commands:
           keys:
             - composer-v2-{{ checksum "composer.lock" }}
             - composer-v2-
+
+      - run:
+          name: Instalar Xdebug para coverage
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y php-xdebug
+            echo "zend_extension=xdebug.so" | sudo tee -a /etc/php/8.2/cli/php.ini
+            echo "xdebug.mode=coverage" | sudo tee -a /etc/php/8.2/cli/php.ini
       - run:
           name: Instalar dependencias de Composer
           command: |
