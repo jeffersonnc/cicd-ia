@@ -3,7 +3,7 @@
         'name' => 'cicd-ia/php-app',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '9f6df0b5171c2887dca55fb650580a2809867823',
+        'reference' => '938c827b4363589b5b2080227b1cc4d100289197',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'cicd-ia/php-app' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '9f6df0b5171c2887dca55fb650580a2809867823',
+            'reference' => '938c827b4363589b5b2080227b1cc4d100289197',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
