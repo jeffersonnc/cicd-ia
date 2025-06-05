@@ -12,21 +12,18 @@
 namespace Symfony\Component\DependencyInjection;
 
 /**
- * Parameter represents a parameter reference.
+ * ContainerAwareInterface should be implemented by classes that depends on a Container.
  *
  * @author Fabien Potencier <fabien@symfony.com>
+ *
+ * @deprecated since Symfony 6.4, use dependency injection instead
  */
-class Parameter
+interface ContainerAwareInterface
 {
-    private string $id;
-
-    public function __construct(string $id)
-    {
-        $this->id = $id;
-    }
-
-    public function __toString(): string
-    {
-        return $this->id;
-    }
+    /**
+     * Sets the container.
+     *
+     * @return void
+     */
+    public function setContainer(?ContainerInterface $container);
 }

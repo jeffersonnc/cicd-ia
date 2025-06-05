@@ -11,11 +11,12 @@
 
 namespace Symfony\Component\DependencyInjection\Attribute;
 
-#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_PARAMETER)]
-class Lazy
+trigger_deprecation('symfony/dependency-injection', '6.3', 'The "%s" class is deprecated, use "%s" instead.', MapDecorated::class, AutowireDecorated::class);
+
+/**
+ * @deprecated since Symfony 6.3, use AutowireDecorated instead
+ */
+#[\Attribute(\Attribute::TARGET_PARAMETER)]
+class MapDecorated
 {
-    public function __construct(
-        public bool|string|null $lazy = true,
-    ) {
-    }
 }
