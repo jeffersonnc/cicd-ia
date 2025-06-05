@@ -33,8 +33,17 @@ jobs:
       
       - run:
           name: Crear directorios necesarios
-          command: mkdir -p test-results
-      
+          command: |
+            mkdir -p test-results
+      - run:
+          name: Ejecutar tests con PHPUnit
+          command: |
+            vendor/bin/phpunit \
+              --configuration phpunit.xml \
+              --log-junit test-results/phpunit.xml \
+              --coverage-clover coverage.xml \
+              --coverage-html coverage
+
       # Guardar resultados para jobs posteriores
       - persist_to_workspace:
           root: .
@@ -50,15 +59,6 @@ jobs:
           path: coverage
           destination: coverage-report
       
-      # Fail fast si los tests fallan
-      - run:
-          name: Verificar que todos los tests pasaron
-          command: |
-            if [ ! -f test-results/phpunit.xml ]; then
-              echo "Tests fallaron - deteniendo pipeline"
-              exit 1
-            fi
-
   # Job separado para análisis de código
   code_quality:
     docker:
@@ -67,11 +67,18 @@ jobs:
     steps:
       - checkout
       - install_dependencies
-      
       # Recuperar artifacts del job anterior
       - attach_workspace:
           at: .
       
+      - run:
+          name: Verificar archivos de coverage
+          command: |
+            echo "Verificando archivos necesarios para SonarCloud..."
+            ls -la coverage.xml || echo "❌ coverage.xml no encontrado"
+            ls -la test-results/phpunit.xml || echo "❌ phpunit.xml no encontrado"
+            ls -la coverage/ || echo "❌ carpeta coverage no encontrada"
+
       - run:
           name: Análisis estático con PHPStan
           command: |
