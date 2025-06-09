@@ -96,7 +96,7 @@ jobs:
       - snyk/scan:
           fail-on-issues: true
           monitor-on-build: true
-          additional-arguments: "--file=composer.json --package-manager=composer --json-file-output=snyk-report.json" 
+          additional-arguments: "--file=composer.lock --package-manager=composer --json-file-output=snyk-report.json" 
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
