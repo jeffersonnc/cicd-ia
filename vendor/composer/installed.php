@@ -3,7 +3,7 @@
         'name' => 'cicd-ia/php-app',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => '8ec18bfee935104035875a592faf42fb95dba8ce',
+        'reference' => 'c7731b1cf118c3a95a84f9c36e21a9125c86fb90',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'cicd-ia/php-app' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '8ec18bfee935104035875a592faf42fb95dba8ce',
+            'reference' => 'c7731b1cf118c3a95a84f9c36e21a9125c86fb90',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -185,7 +185,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../psr/log',
             'aliases' => array(),
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'sebastian/cli-parser' => array(
             'pretty_version' => '1.0.2',

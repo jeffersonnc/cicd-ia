@@ -3024,7 +3024,6 @@
         "phpunit/php-timer",
         "phpunit/phpunit",
         "psr/container",
-        "psr/log",
         "sebastian/cli-parser",
         "sebastian/code-unit",
         "sebastian/code-unit-reverse-lookup",
