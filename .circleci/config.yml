@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@3.0.0
+  snyk: snyk/snyk@2.3.0
 
 jobs:
   # Job separado para tests - principio de responsabilidad única
@@ -79,6 +80,12 @@ jobs:
       # Análisis con SonarCloud
       - sonarcloud/scan:
           cache_version: 2
+      
+      - snyk/scan:
+          fail-on-issues: true
+          monitor-on-build: true
+          severity-threshold: high
+          additional-arguments: "--file=composer.json --json-file-output=snyk-report.json"
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
