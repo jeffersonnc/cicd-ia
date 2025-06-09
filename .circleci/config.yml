@@ -84,8 +84,7 @@ jobs:
       - snyk/scan:
           fail-on-issues: true
           monitor-on-build: true
-          severity-threshold: high
-          additional-arguments: "--dev --json-file-output=snyk-report.json"
+          additional-arguments: "--file=composer.json --json-file-output=snyk-report.json"
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
