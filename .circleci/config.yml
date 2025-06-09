@@ -53,6 +53,18 @@ jobs:
   # Recuperar coverage.xml del job anterior 
       - attach_workspace:
           at: .
+
+      - run:
+          name: Verificar composer.lock existe
+          command: |
+            if [ -f composer.lock ]; then
+              echo "✅ composer.lock encontrado"
+              ls -la composer.*
+            else
+              echo "❌ composer.lock no encontrado"
+              exit 1
+            fi
+
       - run:
           name: Verificar coverage generado
           command: |
@@ -84,7 +96,7 @@ jobs:
       - snyk/scan:
           fail-on-issues: true
           monitor-on-build: true
-          additional-arguments: "--file=composer.json --json-file-output=snyk-report.json"
+          additional-arguments: "--file=composer.json --package-manager=composer --json-file-output=snyk-report.json" 
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
