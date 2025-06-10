@@ -24,7 +24,7 @@ jobs:
           command: |
             phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml
           environment:
-              XDEBUG_MODE: coverage
+            XDEBUG_MODE: coverage
 
       # Guardar resultados para el job code_quality
       - persist_to_workspace:
@@ -47,7 +47,6 @@ jobs:
           name: Instalar dependencias PHP
           command: composer install
 
-  # Recuperar coverage.xml del job anterior 
       - attach_workspace:
           at: .
 
@@ -100,6 +99,22 @@ jobs:
       - run:
           name: Verificar autoloader
           command: composer dump-autoload --optimize --strict-psr
+
+  # Job para escaneo de seguridad de Docker
+  docker_security_scan:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image for security scan
+          command: docker build -t jeffnacato/cicd-ia:security-scan .
+      - snyk/scan:
+          docker-image-name: jeffnacato/cicd-ia:security-scan
+          fail-on-issues: true
+          severity-threshold: medium
 
   docker_build_and_push:
     docker:
@@ -162,6 +177,14 @@ workflows:
       - code_quality:
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - main
+
+      - docker_security_scan:
+          requires:
+            - code_quality
           filters:
             branches:
               only:
