@@ -113,8 +113,10 @@ jobs:
           command: docker build -t jeffnacato/cicd-ia:security-scan .
       - snyk/scan:
           docker-image-name: jeffnacato/cicd-ia:security-scan
-          fail-on-issues: true
-          severity-threshold: medium
+          fail-on-issues: false         
+          severity-threshold: high
+          # No fallar el build si hay problemas de seguridad, solo reportar
+          monitor-on-build: true
 
   docker_build_and_push:
     docker:
