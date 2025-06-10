@@ -80,7 +80,7 @@ jobs:
       # Análisis de seguridad con Snyk
       - snyk/scan:
           fail-on-issues: true
-          command: snyk test
+          command: test
           additional-arguments:
             --file=composer.lock
             --package-manager=composer
@@ -89,7 +89,7 @@ jobs:
       # Monitoreo de seguridad con Snyk
       - snyk/scan:
           fail-on-issues: false
-          command: snyk monitor
+          command: monitor
           additional-arguments:
             --file=composer.lock
             --package-manager=composer
