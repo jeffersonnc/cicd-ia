@@ -2,85 +2,54 @@ version: 2.1
 
 orbs:
   sonarcloud: sonarsource/sonarcloud@3.0.0
-
-# Comandos reutilizables para DRY principle
-commands:
-  install_dependencies:
-    description: "Instala dependencias con cache optimizado"
-    steps:
-      - restore_cache:
-          keys:
-            - composer-v2-{{ checksum "composer.lock" }}
-            - composer-v2-
-      - run:
-          name: Instalar dependencias de Composer
-          command: |
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-      - save_cache:
-          key: composer-v2-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
+  snyk: snyk/snyk@2.3.0
 
 jobs:
   # Job separado para tests - principio de responsabilidad única
   test:
+    # Job para ejecutar pruebas unitarias y generar cobertura de código
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
+    working_directory: ~/cicd-ia
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
-      
+
       - run:
-          name: Crear directorios necesarios
-          command: mkdir -p test-results
-      
-      - run:
-          name: Ejecutar tests unitarios
+          name: Instalar dependencias PHP
           command: |
-            vendor/bin/phpunit \
-              --coverage-clover=coverage.xml \
-              --coverage-html=coverage \
-              --log-junit=test-results/phpunit.xml \
-              --coverage-text
-      
-      # Guardar resultados para jobs posteriores
+            composer install
+      - run:
+          name: ejecutar tests con coverage usando PHPDBG
+          command: |
+            phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml
+          environment:
+            XDEBUG_MODE: coverage
+
+      # Guardar resultados para el job code_quality
       - persist_to_workspace:
           root: .
           paths:
             - coverage.xml
-            - coverage
-            - test-results
-      
+      # Almacenar resultados de pruebas para visualización en CircleCI
       - store_test_results:
-          path: test-results
+          path: tests
       
-      - store_artifacts:
-          path: coverage
-          destination: coverage-report
-      
-      # Fail fast si los tests fallan
-      - run:
-          name: Verificar que todos los tests pasaron
-          command: |
-            if [ ! -f test-results/phpunit.xml ]; then
-              echo "Tests fallaron - deteniendo pipeline"
-              exit 1
-            fi
-
   # Job separado para análisis de código
   code_quality:
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
-      
-      # Recuperar artifacts del job anterior
+
+      - run:
+          name: Instalar dependencias PHP
+          command: composer install
+
       - attach_workspace:
           at: .
-      
+
       - run:
           name: Análisis estático con PHPStan
           command: |
@@ -100,23 +69,25 @@ jobs:
       - sonarcloud/scan:
           cache_version: 2
       
-      # Solo guardar artifacts si hay errores (debugging)
-      - store_artifacts:
-          path: phpstan-report.xml
-          destination: quality-reports/phpstan.xml
-      - store_artifacts:
-          path: phpmd-report.xml  
-          destination: quality-reports/phpmd.xml
+      # Análisis de seguridad con Snyk
+      - snyk/scan:
+          fail-on-issues: true
+          severity-threshold: medium
+          monitor-on-build: true
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
     docker:
-      - image: cimg/php:8.2-browsers
+      - image: cimg/php:8.1
     resource_class: small
     steps:
       - checkout
-      - install_dependencies
       
+      - run:
+          name: Instalar dependencias PHP
+          command: |
+            composer install
+
       - run:
           name: Validar sintaxis PHP
           command: find src/ -name "*.php" -exec php -l {} \;
@@ -128,6 +99,22 @@ jobs:
       - run:
           name: Verificar autoloader
           command: composer dump-autoload --optimize --strict-psr
+
+  # Job para escaneo de seguridad de Docker
+  docker_security_scan:
+    docker:
+      - image: cimg/base:stable
+    resource_class: small
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image for security scan
+          command: docker build -t jeffnacato/cicd-ia:security-scan .
+      - snyk/scan:
+          docker-image-name: jeffnacato/cicd-ia:security-scan
+          fail-on-issues: true
+          severity-threshold: medium
 
   docker_build_and_push:
     docker:
@@ -190,6 +177,14 @@ workflows:
       - code_quality:
           requires:
             - test
+          filters:
+            branches:
+              only:
+                - main
+
+      - docker_security_scan:
+          requires:
+            - code_quality
           filters:
             branches:
               only:

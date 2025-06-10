@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1749077175">
+  <project timestamp="1749077175">
+    <file name="/Users/jeff/Projects/proyecto-cicd/cicd-ia/CICD-IA/src/App.php">
+      <class name="App\App" namespace="global">
+        <metrics complexity="3" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="6" coveredelements="6"/>
+      </class>
+      <line num="6" type="method" name="greet" visibility="public" complexity="1" crap="1" count="1"/>
+      <line num="7" type="stmt" count="1"/>
+      <line num="10" type="method" name="add" visibility="public" complexity="1" crap="1" count="1"/>
+      <line num="11" type="stmt" count="1"/>
+      <line num="14" type="method" name="subtract" visibility="public" complexity="1" crap="1" count="1"/>
+      <line num="15" type="stmt" count="1"/>
+      <metrics loc="19" ncloc="19" classes="1" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="6" coveredelements="6"/>
+    </file>
+    <metrics files="1" loc="19" ncloc="19" classes="1" methods="3" coveredmethods="3" conditionals="0" coveredconditionals="0" statements="3" coveredstatements="3" elements="6" coveredelements="6"/>
+  </project>
+</coverage>
