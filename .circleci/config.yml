@@ -7,6 +7,7 @@ orbs:
 jobs:
   # Job separado para tests - principio de responsabilidad única
   test:
+    # Job para ejecutar pruebas unitarias y generar cobertura de código
     docker:
       - image: cimg/php:8.1
     working_directory: ~/cicd-ia
@@ -37,6 +38,9 @@ jobs:
           root: .
           paths:
             - coverage.xml
+      # Almacenar resultados de pruebas para visualización en CircleCI
+      - store_test_results:
+          path: tests
       
   # Job separado para análisis de código
   code_quality:
@@ -53,26 +57,6 @@ jobs:
   # Recuperar coverage.xml del job anterior 
       - attach_workspace:
           at: .
-
-      - run:
-          name: Verificar composer.lock existe
-          command: |
-            if [ -f composer.lock ]; then
-              echo "✅ composer.lock encontrado"
-              ls -la composer.*
-            else
-              echo "❌ composer.lock no encontrado"
-              exit 1
-            fi
-
-      - run:
-          name: Verificar coverage generado
-          command: |
-            if [ -f coverage.xml ]; then
-              echo "✅ coverage.xml encontrado"
-            else
-              echo "❌ coverage.xml no encontrado"
-            fi
 
       - run:
           name: Análisis estático con PHPStan
@@ -93,10 +77,22 @@ jobs:
       - sonarcloud/scan:
           cache_version: 2
       
+      # Análisis de seguridad con Snyk
       - snyk/scan:
           fail-on-issues: true
-          monitor-on-build: true
-          additional-arguments: "--file=composer.lock --package-manager=composer --json-file-output=snyk-report.json" 
+          command: snyk test
+          additional-arguments:
+            --file=composer.lock
+            --package-manager=composer
+            --json-file-output=snyk-report.json
+
+      # Monitoreo de seguridad con Snyk
+      - snyk/scan:
+          fail-on-issues: false
+          command: snyk monitor
+          additional-arguments:
+            --file=composer.lock
+            --package-manager=composer
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
