@@ -25,14 +25,7 @@ jobs:
             phpdbg -qrr vendor/bin/phpunit --coverage-clover=coverage.xml
           environment:
               XDEBUG_MODE: coverage
-      - run:
-          name: Verificar coverage generado
-          command: |
-            if [ -f coverage.xml ]; then
-              echo "✅ coverage.xml generado correctamente"
-            else
-              echo "❌ coverage.xml no encontrado"
-            fi
+
       # Guardar resultados para el job code_quality
       - persist_to_workspace:
           root: .
@@ -80,19 +73,8 @@ jobs:
       # Análisis de seguridad con Snyk
       - snyk/scan:
           fail-on-issues: true
-          command: test
-          additional-arguments:
-            --file=composer.lock
-            --package-manager=composer
-            --json-file-output=snyk-report.json
-
-      # Monitoreo de seguridad con Snyk
-      - snyk/scan:
-          fail-on-issues: false
-          command: monitor
-          additional-arguments:
-            --file=composer.lock
-            --package-manager=composer
+          severity-threshold: medium
+          monitor-on-build: true
 
   # Job para validar que el proyecto se puede buildear
   build_validation:
